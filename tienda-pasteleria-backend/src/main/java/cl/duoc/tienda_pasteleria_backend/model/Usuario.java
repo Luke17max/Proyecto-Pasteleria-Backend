@@ -40,7 +40,7 @@ public class Usuario {
     private Integer edad = 0;
 
     @Builder.Default
-    private String rol = "CLIENTE"; // "ADMIN" o "CLIENTE"
+    private String rol = "CLIENTE"; // "ADMIN", "VENDEDOR" o "CLIENTE"
 
     @Builder.Default
     private Boolean descuentoSenior = false;

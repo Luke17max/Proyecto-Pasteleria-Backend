@@ -270,6 +270,18 @@ public class DataInitializer implements CommandLineRunner {
                 .esEstudianteDuoc(false)
                 .build());
 
+        Usuario vendedor = usuarioRepository.save(Usuario.builder()
+                .nombre("Vendedor Juan Pérez")
+                .email("vendedor@pasteleriamilsabores.cl")
+                .password("vendedor123")
+                .telefono("+56 9 1122 3344")
+                .direccion("Sucursal Providencia #450, Santiago")
+                .rol("VENDEDOR")
+                .edad(35)
+                .descuentoSenior(false)
+                .esEstudianteDuoc(false)
+                .build());
+
         Usuario rosa = usuarioRepository.save(Usuario.builder()
                 .nombre("Rosa María Carrasco")
                 .email("rosa.carrasco@gmail.com")

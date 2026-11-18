@@ -2,6 +2,7 @@ package cl.duoc.tienda_pasteleria_backend.controller;
 
 import cl.duoc.tienda_pasteleria_backend.model.Usuario;
 import cl.duoc.tienda_pasteleria_backend.repository.UsuarioRepository;
+import cl.duoc.tienda_pasteleria_backend.security.JwtService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,11 +14,12 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final UsuarioRepository usuarioRepository;
+    private final JwtService jwtService;
 
     @Data
     public static class LoginRequest {
@@ -45,17 +47,25 @@ public class AuthController {
         }
 
         Usuario u = usuarioOpt.get();
+
+        // Generamos el token JWT firmado con el email, rol e ID del usuario
+        String token = jwtService.generateToken(u.getEmail(), u.getRol(), u.getId());
+
+        Map<String, Object> usuarioData = new HashMap<>();
+        usuarioData.put("id", u.getId());
+        usuarioData.put("nombre", u.getNombre());
+        usuarioData.put("email", u.getEmail());
+        usuarioData.put("rol", u.getRol());
+        usuarioData.put("telefono", u.getTelefono());
+        usuarioData.put("direccion", u.getDireccion());
+        usuarioData.put("fechaNacimiento", u.getFechaNacimiento());
+        usuarioData.put("edad", u.getEdad());
+        usuarioData.put("descuentoSenior", u.getDescuentoSenior());
+        usuarioData.put("esEstudianteDuoc", u.getEsEstudianteDuoc());
+
         Map<String, Object> resp = new HashMap<>();
-        resp.put("id", u.getId());
-        resp.put("nombre", u.getNombre());
-        resp.put("email", u.getEmail());
-        resp.put("rol", u.getRol());
-        resp.put("telefono", u.getTelefono());
-        resp.put("direccion", u.getDireccion());
-        resp.put("fechaNacimiento", u.getFechaNacimiento());
-        resp.put("edad", u.getEdad());
-        resp.put("descuentoSenior", u.getDescuentoSenior());
-        resp.put("esEstudianteDuoc", u.getEsEstudianteDuoc());
+        resp.put("token", token);
+        resp.put("usuario", usuarioData);
 
         return ResponseEntity.ok(resp);
     }

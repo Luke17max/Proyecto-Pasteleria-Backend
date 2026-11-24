@@ -1,0 +1,13 @@
+# IDE / Editor
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+
+# Archivos de Excel o Docs temporales
+*.xlsx
+*.docx

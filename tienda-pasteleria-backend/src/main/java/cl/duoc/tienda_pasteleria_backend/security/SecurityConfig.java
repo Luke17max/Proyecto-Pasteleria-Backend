@@ -24,7 +24,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // En demostraciones educativas con datos pre-sembrados se usa NoOp o BCrypt
         return NoOpPasswordEncoder.getInstance();
     }
 
@@ -41,11 +40,14 @@ public class SecurityConfig {
                 }))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // Rutas publicas: Login, Swagger, OpenAPI y Catalogo publico para clientes
+                        // Rutas publicas: Login, Swagger, OpenAPI, Catalogo y Registro de compra (Checkout)
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/productos/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/categorias/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/ordenes").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/ordenes/folio/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/usuarios").permitAll()
                         .requestMatchers("/error").permitAll()
                         // Cualquier otra peticion (crear producto, panel admin, reportes) requiere token valido
                         .anyRequest().authenticated()

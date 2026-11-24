@@ -40,7 +40,7 @@ public class SecurityConfig {
                 }))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // Rutas publicas: Login, Swagger, OpenAPI, Catalogo y Registro de compra (Checkout)
+                        // 1. Rutas 100% publicas: Login, Swagger, OpenAPI, Catalogo publico y Checkout
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/productos/**").permitAll()
@@ -49,7 +49,20 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/ordenes/folio/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/usuarios").permitAll()
                         .requestMatchers("/error").permitAll()
-                        // Cualquier otra peticion (crear producto, panel admin, reportes) requiere token valido
+
+                        .requestMatchers(HttpMethod.POST, "/api/v1/productos/**").hasAnyRole("ADMIN", "VENDEDOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/productos/**").hasAnyRole("ADMIN", "VENDEDOR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/productos/**").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.POST, "/api/v1/categorias/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/categorias/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/categorias/**").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.GET, "/api/v1/usuarios/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/usuarios/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/reportes/**").hasAnyRole("ADMIN", "VENDEDOR")
+
+                        // 3. Cualquier otra peticion requiere autenticacion
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -1,7 +1,7 @@
 package cl.duoc.tienda_pasteleria_backend.controller;
 
 import cl.duoc.tienda_pasteleria_backend.model.Categoria;
-import cl.duoc.tienda_pasteleria_backend.repository.CategoriaRepository;
+import cl.duoc.tienda_pasteleria_backend.service.CategoriaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,44 +15,38 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoriaController {
 
-    private final CategoriaRepository categoriaRepository;
+    private final CategoriaService categoriaService;
 
     @GetMapping
     public List<Categoria> obtenerTodas() {
-        return categoriaRepository.findAll();
+        return categoriaService.obtenerTodas();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Categoria> obtenerPorId(@PathVariable Long id) {
-        return categoriaRepository.findById(id)
+        return categoriaService.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public ResponseEntity<Categoria> crear(@Valid @RequestBody Categoria categoria) {
-        Categoria guardada = categoriaRepository.save(categoria);
+        Categoria guardada = categoriaService.crear(categoria);
         return ResponseEntity.status(HttpStatus.CREATED).body(guardada);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Categoria> actualizar(@PathVariable Long id, @Valid @RequestBody Categoria nueva) {
-        return categoriaRepository.findById(id)
-                .map(cat -> {
-                    cat.setNombre(nueva.getNombre());
-                    cat.setDescripcion(nueva.getDescripcion());
-                    cat.setImagen(nueva.getImagen());
-                    return ResponseEntity.ok(categoriaRepository.save(cat));
-                })
+        return categoriaService.actualizar(id, nueva)
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        if (!categoriaRepository.existsById(id)) {
+        if (!categoriaService.eliminar(id)) {
             return ResponseEntity.notFound().build();
         }
-        categoriaRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 }
